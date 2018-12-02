@@ -2,13 +2,30 @@ class Core {
 
     constructor () {
         this.connectUrl = ''
+        this.socket = null
     }
 
-    connect ({url}) {}
-    close () {}
-    subscribe () {}
-    unsubscribe () {}
-    publish () {}
+    connect ({url}) {
+        this.connectUrl = url
+        this.socket = new Core.Socket({url})
+        return this.socket.connect()
+    }
+
+    close () {
+        
+    }
+
+    subscribe (topic, callback) {
+        
+    }
+
+    unsubscribe (sid) {
+
+    }
+
+    publish (topic, message) {
+
+    }
 
     request () {}
     flush () {}

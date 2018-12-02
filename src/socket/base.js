@@ -1,6 +1,7 @@
 class Websocket {
-    constructor () {
+    constructor ({url}) {
         this.connected = false
+        this.url = url
     }
 
     connect () {}
