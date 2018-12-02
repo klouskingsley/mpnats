@@ -4,7 +4,9 @@ class Websocket {
         this.url = url
     }
 
-    connect () {}
+    connect () {
+
+    }
 
     close () {}
 
