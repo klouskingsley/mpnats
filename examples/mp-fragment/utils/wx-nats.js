@@ -75,6 +75,7 @@
 
   var SUB = 'SUB';
   var UNSUB = 'UNSUB';
+  var PUB = 'PUB';
   var SPC = ' ';
   var CR_LF = '\r\n';
   var MSG = /^MSG\s+([^\s\r\n]+)\s+([^\s\r\n]+)\s+(([^\s\r\n]+)[^\S\r\n]+)?(\d+)\r\n/i;
@@ -88,6 +89,11 @@
   function encode_utf8(s) {
     s = s || '';
     return unescape(encodeURIComponent(s));
+  }
+
+  function bytes_size(str) {
+    var m = encodeURIComponent(str).match(/%[89ABab]/g);
+    return str.length + (m ? m.length : 0);
   }
 
   function substr_utf8_bytes(str, startInBytes, lengthInBytes) {
@@ -121,9 +127,11 @@
   var Core =
   /*#__PURE__*/
   function () {
-    function Core() {
+    function Core(option) {
       _classCallCheck(this, Core);
 
+      this.option = option;
+      this.reuseTopic = !!(option && option.reuseTopic);
       this.connectUrl = '';
       this.socket = null;
       this.subMsgMap = {};
@@ -187,7 +195,12 @@
       }
     }, {
       key: "publish",
-      value: function publish(topic, message) {}
+      value: function publish(topic) {
+        var message = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : '';
+        if (typeof message != 'string') throw new TypeError('publish(topic, message): message must be string type');
+        var msg = [PUB, topic, bytes_size(message) + CR_LF + message + CR_LF].join(SPC);
+        this.socket.send(msg);
+      }
     }, {
       key: "request",
       value: function request() {}

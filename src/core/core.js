@@ -1,9 +1,11 @@
 import * as config from './config'
-import {encode_utf8, substr_utf8_bytes} from './bytes'
+import {encode_utf8, substr_utf8_bytes, bytes_size} from './bytes'
 
 class Core {
 
-    constructor () {
+    constructor (option) {
+        this.option = option
+        this.reuseTopic = !!(option && option.reuseTopic)
         this.connectUrl = ''
         this.socket = null
         this.subMsgMap = {}
@@ -60,8 +62,14 @@ class Core {
         }
     }
 
-    publish (topic, message) {
-
+    publish (topic, message = '') {
+        if (typeof message != 'string') throw new TypeError('publish(topic, message): message must be string type')
+        const msg = [
+            config.PUB,
+            topic,
+            bytes_size(message) + config.CR_LF + message + config.CR_LF
+        ].join(config.SPC)
+        this.socket.send(msg)
     }
 
     request () {}

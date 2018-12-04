@@ -1,6 +1,7 @@
 var SUB = 'SUB'
 var UNSUB = 'UNSUB'
 var CONNECT = 'CONNECT'
+var PUB = 'PUB'
 var EMPTY = ''
 var SPC = ' '
 var CR_LF = '\r\n'
@@ -19,6 +20,7 @@ var PONG_RESPONSE = 'PONG' + CR_LF
 export {
     server,
     SUB,
+    PUB,
     UNSUB,
     CONNECT,
     EMPTY,
