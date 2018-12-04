@@ -47,6 +47,7 @@ class Core {
             config.SUB, topic, sid + config.CR_LF
         ].join(config.SPC)
         this.socket.send(msg)
+        return sid
     }
 
     unsubscribe (sid) {
@@ -68,10 +69,12 @@ class Core {
     timeout () {}
 
     _onMessage (data) {
+        // console.log('on msg', data)
         var msg
         var m
         var topic
         var sid
+        var nextMsg
         
         if (
             (m = config.MSG.exec(data)) !== null || 
@@ -90,6 +93,11 @@ class Core {
                 this.pendingMsg = ''
             }
             this._msgArrived(sid, msg)
+            // 多个消息在一条
+            nextMsg = m.input.substr(m[0].length + msg.length + config.CR_LF.length)
+            if (nextMsg !== '') {
+                this._onMessage.call(this, nextMsg)
+            }
         } else if ((m = config.OK.exec(data)) !== null) {
             // verbose ok
         } else if ((m = config.ERR.exec(data)) !== null) {
@@ -115,7 +123,7 @@ class Core {
 }
 
 Core.Socket = null
-Core.setSocket (Socket) {
+Core.setSocket = function (Socket) {
     Core.Socket = Socket
 }
 

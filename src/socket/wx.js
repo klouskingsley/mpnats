@@ -19,10 +19,10 @@ class WxSocket extends Socket {
                     reject(err)
                 }
             })
-            this.socketTask.onOpen = this._onOpen.bind(this)
-            this.socketTask.onMessage = this._onMessage.bind(this)
-            this.socketTask.onClose = this._onClose.bind(this)
-            this.socketTask.onError = this._onError.bind(this)
+            this.socketTask.onOpen(this._onOpen.bind(this))
+            this.socketTask.onMessage(this._onMessage.bind(this))
+            this.socketTask.onClose(this._onClose.bind(this))
+            this.socketTask.onError(this._onError.bind(this))
         })
     }
 
@@ -36,16 +36,19 @@ class WxSocket extends Socket {
 
     _onMessage (res) {
         const data = res.data
-        this.onmessage
+        this.onmessage && this.onmessage(data)
     }
 
     _onError () {
 
     }
 
-    send () {}
+    send (msg) {
+        this.socketTask.send({
+            data: msg
+        })
+    }
 
-    onmessage () {}
 }
 
 export default WxSocket
