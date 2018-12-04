@@ -218,7 +218,7 @@
         var m;
         var topic;
         var sid;
-        var nextMsg;
+        var nextMsg = '';
 
         if ((m = MSG.exec(data)) !== null || (m = MSG.exec(this.pendingMsg + data)) !== null) {
           topic = m[1];
@@ -238,14 +238,17 @@
 
 
           nextMsg = m.input.substr(m[0].length + msg.length + CR_LF.length);
-
-          if (nextMsg !== '') {
-            this._onMessage.call(this, nextMsg);
-          }
-        } else if ((m = OK.exec(data)) !== null) ; else if ((m = ERR.exec(data)) !== null) ; else if ((m = PONG.exec(data)) !== null) ; else if ((m = PING.exec(data)) !== null) {
+        } else if ((m = OK.exec(data)) !== null) {
+          console.log(m);
+          nextMsg = m.input.substr(m[0].length); // verbose ok
+        } else if ((m = ERR.exec(data)) !== null) ; else if ((m = PONG.exec(data)) !== null) ; else if ((m = PING.exec(data)) !== null) {
           // PING, response PONG
           this.socket.send(PONG_RESPONSE);
         } else if ((m = INFO.exec(data)) !== null) ;
+
+        if (nextMsg !== '') {
+          this._onMessage.call(this, nextMsg);
+        }
       }
     }, {
       key: "_onClose",
