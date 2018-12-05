@@ -10,7 +10,7 @@
 	"compileType": "miniprogram",
 	"libVersion": "haha",
 	"appid": "touristappid",
-	"projectname": "wechat-rop-nats",
+	"projectname": "nats",
 	"condition": {
 		"search": {
 			"current": -1,
