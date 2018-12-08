@@ -1,16 +1,21 @@
 import * as config from './config'
 import {encode_utf8, substr_utf8_bytes, bytes_size} from './bytes'
+import EventEmitter from './event-emitter'
 
-class Core {
+class Core extends EventEmitter {
 
     constructor (option) {
+        super()
         this.option = option
         this.reuseTopic = !!(option && option.reuseTopic)
         this.connectUrl = ''
-        this.socket = null
+        this.socket = null b 
         this.subMsgMap = {}
         this.uid = 0
         this.pendingMsg = ''
+        this._onMessage = this._onMessage.bind(this)
+        this._onClose = this._onClose.bind(this)
+        this._onError = this._onError.bind(this)
     }
 
     connect ({url}) {
@@ -20,9 +25,9 @@ class Core {
 
         this.connectUrl = url
         this.socket = new Core.Socket({url})
-        this.socket.onmessage = this._onMessage.bind(this)
-        this.socket.onerror = this._onError.bind(this)
-        this.socket.onclose = this._onClose.bind(this)
+        this.socket.on('message', this._onMessage)
+        this.socket.on('error', this._onError)
+        this.socket.on('close', this._onClose)
         return this.socket.connect()
     }
 
@@ -34,11 +39,15 @@ class Core {
             this.uid = 0
             this.socket = null
             this.pendingMsg = ''
-            socket.close()
+            return socket.close()
         }
+        return Promise.resolve()
     }
 
     subscribe (topic, callback) {
+        if (!this.socket) {
+            throw new Error('subscribe: please excute connect before subscribe')
+        }
         const sid = ++this.uid
         this.subMsgMap[sid] = {
             sid,
@@ -48,8 +57,7 @@ class Core {
         const msg = [
             config.SUB, topic, sid + config.CR_LF
         ].join(config.SPC)
-        this.socket.send(msg)
-        return sid
+        return this.socket.send(msg).then(() => sid)
     }
 
     unsubscribe (sid) {
@@ -58,8 +66,9 @@ class Core {
             const msg = [
                 config.UNSUB, sid + config.CR_LF
             ].join(config.SPC)
-            this.socket.send(msg)
+            return this.socket.send(msg)
         }
+        return Promise.resolve()
     }
 
     publish (topic, message = '') {
@@ -101,20 +110,16 @@ class Core {
                 this.pendingMsg = ''
             }
             this._msgArrived(sid, msg)
-            // 多个消息在一条
             nextMsg = m.input.substr(m[0].length + msg.length + config.CR_LF.length)
         } else if ((m = config.OK.exec(data)) !== null) {
             console.log(m)
-            nextMsg = m.input.substr(m[0].length)
             // verbose ok
         } else if ((m = config.ERR.exec(data)) !== null) {
             // error 
         } else if ((m = config.PONG.exec(data)) !== null) {
             // PONG
-            nextMsg = m.input.substr(m[0].length)
         } else if ((m = config.PING.exec(data)) !== null) {
             // PING, response PONG
-            nextMsg = m.input.substr(m[0].length)
             this.socket.send(config.PONG_RESPONSE)
         } else if ((m = config.INFO.exec(data)) !== null) {
             // INFO, server info

@@ -124,19 +124,77 @@
     return resultStr;
   }
 
+  function E() {}
+
+  E.prototype = {
+    on: function on(name, callback, ctx) {
+      var e = this.e || (this.e = {});
+      (e[name] || (e[name] = [])).push({
+        fn: callback,
+        ctx: ctx
+      });
+      return this;
+    },
+    once: function once(name, callback, ctx) {
+      var self = this;
+
+      function listener() {
+        self.off(name, listener);
+        callback.apply(ctx, arguments);
+      }
+      listener._ = callback;
+      return this.on(name, listener, ctx);
+    },
+    emit: function emit(name) {
+      var data = [].slice.call(arguments, 1);
+      var evtArr = ((this.e || (this.e = {}))[name] || []).slice();
+      var i = 0;
+      var len = evtArr.length;
+
+      for (i; i < len; i++) {
+        evtArr[i].fn.apply(evtArr[i].ctx, data);
+      }
+
+      return this;
+    },
+    off: function off(name, callback) {
+      var e = this.e || (this.e = {});
+      var evts = e[name];
+      var liveEvents = [];
+
+      if (evts && callback) {
+        for (var i = 0, len = evts.length; i < len; i++) {
+          if (evts[i].fn !== callback && evts[i].fn._ !== callback) liveEvents.push(evts[i]);
+        }
+      }
+
+      liveEvents.length ? e[name] = liveEvents : delete e[name];
+      return this;
+    }
+  };
+
   var Core =
   /*#__PURE__*/
-  function () {
+  function (_EventEmitter) {
+    _inherits(Core, _EventEmitter);
+
     function Core(option) {
+      var _this;
+
       _classCallCheck(this, Core);
 
-      this.option = option;
-      this.reuseTopic = !!(option && option.reuseTopic);
-      this.connectUrl = '';
-      this.socket = null;
-      this.subMsgMap = {};
-      this.uid = 0;
-      this.pendingMsg = '';
+      _this = _possibleConstructorReturn(this, _getPrototypeOf(Core).call(this));
+      _this.option = option;
+      _this.reuseTopic = !!(option && option.reuseTopic);
+      _this.connectUrl = '';
+      _this.socket = null;
+      _this.subMsgMap = {};
+      _this.uid = 0;
+      _this.pendingMsg = '';
+      _this._onMessage = _this._onMessage.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+      _this._onClose = _this._onClose.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+      _this._onError = _this._onError.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+      return _this;
     }
 
     _createClass(Core, [{
@@ -152,9 +210,9 @@
         this.socket = new Core.Socket({
           url: url
         });
-        this.socket.onmessage = this._onMessage.bind(this);
-        this.socket.onerror = this._onError.bind(this);
-        this.socket.onclose = this._onClose.bind(this);
+        this.socket.on('message', this._onMessage);
+        this.socket.on('error', this._onError);
+        this.socket.on('close', this._onClose);
         return this.socket.connect();
       }
     }, {
@@ -168,8 +226,10 @@
           this.uid = 0;
           this.socket = null;
           this.pendingMsg = '';
-          socket.close();
+          return socket.close();
         }
+
+        return Promise.resolve();
       }
     }, {
       key: "subscribe",
@@ -181,8 +241,9 @@
           callback: callback
         };
         var msg = [SUB, topic, sid + CR_LF].join(SPC);
-        this.socket.send(msg);
-        return sid;
+        return this.socket.send(msg).then(function () {
+          return sid;
+        });
       }
     }, {
       key: "unsubscribe",
@@ -190,8 +251,10 @@
         if (this.subMsgMap[sid]) {
           this.subMsgMap[sid] = null;
           var msg = [UNSUB, sid + CR_LF].join(SPC);
-          this.socket.send(msg);
+          return this.socket.send(msg);
         }
+
+        return Promise.resolve();
       }
     }, {
       key: "publish",
@@ -234,13 +297,11 @@
             this.pendingMsg = '';
           }
 
-          this._msgArrived(sid, msg); // 多个消息在一条
-
+          this._msgArrived(sid, msg);
 
           nextMsg = m.input.substr(m[0].length + msg.length + CR_LF.length);
         } else if ((m = OK.exec(data)) !== null) {
-          console.log(m);
-          nextMsg = m.input.substr(m[0].length); // verbose ok
+          console.log(m); // verbose ok
         } else if ((m = ERR.exec(data)) !== null) ; else if ((m = PONG.exec(data)) !== null) ; else if ((m = PING.exec(data)) !== null) {
           // PING, response PONG
           this.socket.send(PONG_RESPONSE);
@@ -265,7 +326,7 @@
     }]);
 
     return Core;
-  }();
+  }(E);
 
   Core.Socket = null;
 
@@ -275,20 +336,20 @@
 
   var Websocket =
   /*#__PURE__*/
-  function () {
+  function (_EventEmitter) {
+    _inherits(Websocket, _EventEmitter);
+
     function Websocket(_ref) {
+      var _this;
+
       var url = _ref.url;
 
       _classCallCheck(this, Websocket);
 
-      this.connected = false;
-      this.url = url;
-      this.onmessage = null;
-      this.offmessage = null;
-      this.onopen = null;
-      this.offopen = null;
-      this.onerror = null;
-      this.offerror = null;
+      _this = _possibleConstructorReturn(this, _getPrototypeOf(Websocket).call(this));
+      _this.connected = false;
+      _this.url = url;
+      return _this;
     }
 
     _createClass(Websocket, [{
@@ -303,61 +364,7 @@
     }]);
 
     return Websocket;
-  }();
-
-  function E() {// Keep this empty so it's easier to inherit from
-    // (via https://github.com/lipsmack from https://github.com/scottcorgan/tiny-emitter/issues/3)
-  }
-
-  E.prototype = {
-    on: function on(name, callback, ctx) {
-      var e = this.e || (this.e = {});
-      (e[name] || (e[name] = [])).push({
-        fn: callback,
-        ctx: ctx
-      });
-      return this;
-    },
-    once: function once(name, callback, ctx) {
-      var self = this;
-
-      function listener() {
-        self.off(name, listener);
-        callback.apply(ctx, arguments);
-      }
-      listener._ = callback;
-      return this.on(name, listener, ctx);
-    },
-    emit: function emit(name) {
-      var data = [].slice.call(arguments, 1);
-      var evtArr = ((this.e || (this.e = {}))[name] || []).slice();
-      var i = 0;
-      var len = evtArr.length;
-
-      for (i; i < len; i++) {
-        evtArr[i].fn.apply(evtArr[i].ctx, data);
-      }
-
-      return this;
-    },
-    off: function off(name, callback) {
-      var e = this.e || (this.e = {});
-      var evts = e[name];
-      var liveEvents = [];
-
-      if (evts && callback) {
-        for (var i = 0, len = evts.length; i < len; i++) {
-          if (evts[i].fn !== callback && evts[i].fn._ !== callback) liveEvents.push(evts[i]);
-        }
-      } // Remove event from queue to prevent memory leak
-      // Suggested by https://github.com/lazd
-      // Ref: https://github.com/scottcorgan/tiny-emitter/commit/c6ebfaa9bc973b33d110a84a307742b7cf94c953#commitcomment-5024910
-
-
-      liveEvents.length ? e[name] = liveEvents : delete e[name];
-      return this;
-    }
-  };
+  }(E);
 
   var WxSocket =
   /*#__PURE__*/
@@ -371,7 +378,8 @@
 
       _this = _possibleConstructorReturn(this, _getPrototypeOf(WxSocket).call(this, opt));
       _this.socketTask = null;
-      _this._eventEmitter = new E();
+      _this.isConnected = false;
+      _this.isConnecting = false;
       return _this;
     }
 
@@ -381,12 +389,20 @@
         var _this2 = this;
 
         return new Promise(function (resolve, reject) {
+          _this2.isConnecting = true;
           _this2.socketTask = wx.connectSocket({
             url: _this2.url,
             success: function success() {
-              _this2._eventEmitter.once('open', resolve);
+              _this2.isConnecting = false;
+
+              _this2.once('open', resolve);
             },
             fail: function fail(err) {
+              _this2.isConnected = false;
+              _this2.isConnecting = false;
+
+              _this2.emit('fail');
+
               reject(err);
             }
           });
@@ -403,28 +419,61 @@
     }, {
       key: "_onOpen",
       value: function _onOpen(header) {
-        this._eventEmitter.emit('open', header);
+        this.emit('open', header);
+        this.isConnected = true;
       }
     }, {
       key: "_onClose",
       value: function _onClose() {
-        this._eventEmitter.emit('close');
+        this.emit('close');
+        this.isConnected = false;
       }
     }, {
       key: "_onMessage",
       value: function _onMessage(res) {
         var data = res.data;
-        this.onmessage && this.onmessage(data);
+        this.emit('message', data, res);
       }
     }, {
       key: "_onError",
-      value: function _onError() {}
+      value: function _onError() {
+        this.emit('error');
+      }
     }, {
       key: "send",
       value: function send(msg) {
-        this.socketTask.send({
-          data: msg
+        var _this3 = this;
+
+        return new Promise(function (resolve, reject) {
+          _this3.socketTask.send({
+            data: msg,
+            success: resolve,
+            fail: reject
+          });
         });
+      }
+    }, {
+      key: "close",
+      value: function close() {
+        var _this4 = this;
+
+        if (this.isConnected) {
+          return new Promise(function (resolve, reject) {
+            _this4.socketTask.close();
+
+            _this4.once('close', resolve);
+          });
+        }
+
+        if (this.isConnecting) {
+          return new Promise(function (resolve, reject) {
+            _this4.once('open', function () {
+              _this4.socketTask.close();
+            });
+
+            _this4.once('close', resolve);
+          });
+        }
       }
     }]);
 

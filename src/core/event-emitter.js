@@ -1,7 +1,4 @@
-function E () {
-  // Keep this empty so it's easier to inherit from
-  // (via https://github.com/lipsmack from https://github.com/scottcorgan/tiny-emitter/issues/3)
-}
+function E () {}
 
 E.prototype = {
   on: function (name, callback, ctx) {
@@ -50,10 +47,6 @@ E.prototype = {
           liveEvents.push(evts[i]);
       }
     }
-
-    // Remove event from queue to prevent memory leak
-    // Suggested by https://github.com/lazd
-    // Ref: https://github.com/scottcorgan/tiny-emitter/commit/c6ebfaa9bc973b33d110a84a307742b7cf94c953#commitcomment-5024910
 
     (liveEvents.length)
       ? e[name] = liveEvents

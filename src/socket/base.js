@@ -1,19 +1,13 @@
-class Websocket {
+import EventEmitter from '../core/event-emitter'
+
+class Websocket extends EventEmitter {
     constructor ({url}) {
+        super()
         this.connected = false
         this.url = url
-
-        this.onmessage = null
-        this.offmessage = null
-        this.onopen = null
-        this.offopen = null
-        this.onerror = null
-        this.offerror = null
     }
 
-    connect () {
-
-    }
+    connect () {}
 
     close () {}
 
