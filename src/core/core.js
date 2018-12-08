@@ -111,17 +111,22 @@ class Core extends EventEmitter {
             this._msgArrived(sid, msg)
             nextMsg = m.input.substr(m[0].length + msg.length + config.CR_LF.length)
         } else if ((m = config.OK.exec(data)) !== null) {
-            console.log(m)
+            nextMsg = m.input.substr(m[0].length)
             // verbose ok
         } else if ((m = config.ERR.exec(data)) !== null) {
             // error 
+            nextMsg = m.input.substr(m[0].length)
+
         } else if ((m = config.PONG.exec(data)) !== null) {
             // PONG
+            nextMsg = m.input.substr(m[0].length)
         } else if ((m = config.PING.exec(data)) !== null) {
             // PING, response PONG
+            nextMsg = m.input.substr(m[0].length)
             this.socket.send(config.PONG_RESPONSE)
         } else if ((m = config.INFO.exec(data)) !== null) {
             // INFO, server info
+            nextMsg = m.input.substr(m[0].length)
         }
         if (nextMsg !== '') {
             this._onMessage.call(this, nextMsg)

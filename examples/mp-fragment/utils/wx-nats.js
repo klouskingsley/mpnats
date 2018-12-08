@@ -304,11 +304,21 @@
 
           nextMsg = m.input.substr(m[0].length + msg.length + CR_LF.length);
         } else if ((m = OK.exec(data)) !== null) {
-          console.log(m); // verbose ok
-        } else if ((m = ERR.exec(data)) !== null) ; else if ((m = PONG.exec(data)) !== null) ; else if ((m = PING.exec(data)) !== null) {
+          nextMsg = m.input.substr(m[0].length); // verbose ok
+        } else if ((m = ERR.exec(data)) !== null) {
+          // error 
+          nextMsg = m.input.substr(m[0].length);
+        } else if ((m = PONG.exec(data)) !== null) {
+          // PONG
+          nextMsg = m.input.substr(m[0].length);
+        } else if ((m = PING.exec(data)) !== null) {
           // PING, response PONG
+          nextMsg = m.input.substr(m[0].length);
           this.socket.send(PONG_RESPONSE);
-        } else if ((m = INFO.exec(data)) !== null) ;
+        } else if ((m = INFO.exec(data)) !== null) {
+          // INFO, server info
+          nextMsg = m.input.substr(m[0].length);
+        }
 
         if (nextMsg !== '') {
           this._onMessage.call(this, nextMsg);
