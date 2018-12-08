@@ -185,7 +185,6 @@
 
       _this = _possibleConstructorReturn(this, _getPrototypeOf(Core).call(this));
       _this.option = option;
-      _this.reuseTopic = !!(option && option.reuseTopic);
       _this.connectUrl = '';
       _this.socket = null;
       _this.subMsgMap = {};
@@ -234,6 +233,10 @@
     }, {
       key: "subscribe",
       value: function subscribe(topic, callback) {
+        if (!this.socket) {
+          throw new Error('subscribe: please excute connect before subscribe');
+        }
+
         var sid = ++this.uid;
         this.subMsgMap[sid] = {
           sid: sid,
@@ -313,10 +316,14 @@
       }
     }, {
       key: "_onClose",
-      value: function _onClose() {}
+      value: function _onClose() {
+        this.emit('close');
+      }
     }, {
       key: "_onError",
-      value: function _onError() {}
+      value: function _onError() {
+        this.emit('error');
+      }
     }, {
       key: "_msgArrived",
       value: function _msgArrived(sid, msg) {

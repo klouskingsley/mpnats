@@ -14,7 +14,7 @@ exports.getInputConfig = (type) => {
 
 exports.getOutputConfig = (type) => {
     return {
-        file: `dist/${type}-nats.js`,
+        file: `./${type}.js`,
         format: 'umd',
         name: 'Nats'
     }

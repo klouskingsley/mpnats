@@ -3,7 +3,7 @@
 ## 安装
 
 ```
-$ npm install nats -S
+$ npm install mpnats -S
 ```
 
 ## 使用
@@ -11,7 +11,7 @@ $ npm install nats -S
 - 微信小程序
 
 ```js
-const Nats = require('nats/wx')
+const Nats = require('mpnats/wx')
 const nats = new Nats()
 nats.connect({url: 'wss://younatsserver.io'})
     .then(() => {
@@ -24,7 +24,7 @@ nats.connect({url: 'wss://younatsserver.io'})
 - 支付宝小程序
 
 ```js
-const Nats = require('nats/alipay')
+const Nats = require('mpnats/alipay')
 const nats = new Nats()
 nats.connect({url: 'wss://younatsserver.io'})
     .then(() => {
@@ -37,7 +37,7 @@ nats.connect({url: 'wss://younatsserver.io'})
 - 百度小程序
 
 ```js
-const Nats = require('nats/baidu')
+const Nats = require('mpnats/baidu')
 const nats = new Nats()
 nats.connect({url: 'wss://younatsserver.io'})
     .then(() => {
@@ -61,7 +61,7 @@ promise resolve会返回sid，可以用这个sid来取消订阅
 例子
 
 ```js
-const Nats = require('nats/wx')
+const Nats = require('mpnats/wx')
 const nats = new Nats()
 (async function () {
     await nats.connect({url: 'wss://yournatserver.io'})
@@ -82,7 +82,7 @@ nats.unsubscribe(sid: number): Promise<void>
 例子
 
 ```js
-const Nats = require('nats/wx')
+const Nats = require('mpnats/wx')
 const nats = new Nats()
 (async function () {
     await nats.connect({url: 'wss://yournatserver.io'})
@@ -103,7 +103,7 @@ nats.publish(topic: string, message: string)
 例子
 
 ```js
-const Nats = require('nats/wx')
+const Nats = require('mpnats/wx')
 const nats = new Nats()
 (async function () {
     await nats.connect({url: 'wss://yournatserver.io'})
@@ -125,7 +125,7 @@ nats.close()
 例子
 
 ```js
-const Nats = require('nats/wx')
+const Nats = require('mpnats/wx')
 const nats = new Nats()
 (async function () {
     await nats.connect({url: 'wss://yournatserver.io'})
@@ -145,7 +145,7 @@ nats.off('close', callback: Function) // 取消监听
 
 
 ```js
-const Nats = require('nats/wx')
+const Nats = require('mpnats/wx')
 const nats = new Nats()
 nats.on('close', function () {
     console.log('nats连接由于某种原因关闭了')
@@ -161,7 +161,7 @@ nats.off('error', callback: Function) // 取消监听
 ```
 
 ```js
-const Nats = require('nats/wx')
+const Nats = require('mpnats/wx')
 const nats = new Nats()
 nats.on('error', function () {
     console.log('nats连接由于某种原因出错了')

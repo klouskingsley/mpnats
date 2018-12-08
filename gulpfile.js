@@ -13,7 +13,7 @@ gulp.task('rollup-wx', function () {
             bundle.write(outputCoinfig)
         })
         .then(() => {
-            return cp(path.resolve(__dirname, './dist/wx-nats.js'), path.resolve(__dirname, './examples/mp-fragment/utils/', 'wx-nats.js'))
+            return cp(path.resolve(__dirname, './wx.js'), path.resolve(__dirname, './examples/mp-fragment/utils/', 'wx-nats.js'))
         })
 })
 

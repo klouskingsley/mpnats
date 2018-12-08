@@ -1,5 +1,5 @@
 {
-  "name": "wechat-nats",
+  "name": "mpnats",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
