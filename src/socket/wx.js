@@ -1,5 +1,4 @@
 import Socket from './base'
-import EventEmitter from '../core/event-emitter'
 
 class WxSocket extends Socket {
     constructor (opt) {
