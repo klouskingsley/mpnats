@@ -10,16 +10,16 @@ Page({
 
   onLoad () {
     const nats = new Nats()
-    nats.connect({url: 'wss://msg-ws.myun.tv'}).then(() => {
-      console.log('connect 成功')
-    })
+    nats.connect({url: 'wss://msg-ws.myun.tv'})
     this.nats = nats
+    console.log('connect 成功')
+    getApp().nats = nats
   },
 
   sub () {
     this.nats.subscribe('stream-event', (data) =>  {
       console.log('stream-event', data)
-    }).then(sid => {
+    }).then((sid) => {
       this.sid = sid
     })
   },
@@ -28,7 +28,7 @@ Page({
     this.nats.unsubscribe(this.sid)
   },
 
-  async close () {
+  close () {
     this.nats.close()
   }
 })

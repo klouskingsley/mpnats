@@ -279,6 +279,7 @@
     }, {
       key: "_onMessage",
       value: function _onMessage(data) {
+        // console.log('on msg', data)
         var msg;
         var m;
         var topic;
@@ -382,31 +383,31 @@
     return Websocket;
   }(E);
 
-  var SwanSocket =
+  var WxSocket =
   /*#__PURE__*/
   function (_Socket) {
-    _inherits(SwanSocket, _Socket);
+    _inherits(WxSocket, _Socket);
 
-    function SwanSocket(opt) {
+    function WxSocket(opt) {
       var _this;
 
-      _classCallCheck(this, SwanSocket);
+      _classCallCheck(this, WxSocket);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(SwanSocket).call(this, opt));
+      _this = _possibleConstructorReturn(this, _getPrototypeOf(WxSocket).call(this, opt));
       _this.socketTask = null;
       _this.isConnected = false;
       _this.isConnecting = false;
       return _this;
     }
 
-    _createClass(SwanSocket, [{
+    _createClass(WxSocket, [{
       key: "connect",
       value: function connect() {
         var _this2 = this;
 
         return new Promise(function (resolve, reject) {
           _this2.isConnecting = true;
-          _this2.socketTask = swan.connectSocket({
+          _this2.socketTask = wx.connectSocket({
             url: _this2.url,
             success: function success() {
               _this2.isConnecting = false;
@@ -493,10 +494,10 @@
       }
     }]);
 
-    return SwanSocket;
+    return WxSocket;
   }(Websocket);
 
-  Core.setSocket(SwanSocket);
+  Core.setSocket(WxSocket);
 
   return Core;
 

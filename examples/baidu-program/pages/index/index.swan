@@ -1,0 +1,7 @@
+<view>
+    hello pages/index
+
+    <button bind:tap="sub">订阅</button>
+    <button bind:tap="unsub">取消订阅</button>                                                                                                                                                                                                                      
+    <button bind:tap="close">close</button>                                                                                                                                                                                                                      
+</view>

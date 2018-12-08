@@ -85,7 +85,6 @@ class Core extends EventEmitter {
     timeout () {}
 
     _onMessage (data) {
-        // console.log('on msg', data)
         var msg
         var m
         var topic
