@@ -7,9 +7,8 @@ class Core extends EventEmitter {
     constructor (option) {
         super()
         this.option = option
-        this.reuseTopic = !!(option && option.reuseTopic)
         this.connectUrl = ''
-        this.socket = null b 
+        this.socket = null
         this.subMsgMap = {}
         this.uid = 0
         this.pendingMsg = ''
