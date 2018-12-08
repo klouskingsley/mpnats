@@ -129,9 +129,13 @@ class Core extends EventEmitter {
         }
     }
 
-    _onClose () {}
+    _onClose () {
+        this.emit('close')
+    }
 
-    _onError () {}
+    _onError () {
+        this.emit('error')
+    }
 
     _msgArrived (sid, msg) {
         const callback = this.subMsgMap[sid] && this.subMsgMap[sid].callback
