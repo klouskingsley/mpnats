@@ -7,7 +7,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "ava",
     "bundle": "rollup src/wx-nats.js -f umd -n nats -o dist/wx-nats.js",
     "copy": "cp ./dist/wx-nats.js ./examples/mp-fragment/utils/wx-nats.js"
   },
@@ -15,11 +15,20 @@
     "type": "git",
     "url": "git@gitee.com:xharry/nats.git"
   },
+  "ava": {
+		"babel": {
+			"testOptions": {
+				"babelrc": false,
+				"configFile": false
+			}
+		}
+	},
   "author": "",
   "license": "MIT",
   "devDependencies": {
     "@babel/core": "^7.2.0",
     "@babel/preset-env": "^7.2.0",
+    "ava": "^1.0.0-rc.2",
     "cp-file": "^6.0.0",
     "gulp": "^3.9.1",
     "rollup": "^0.67.4",
