@@ -1,6 +1,6 @@
 {
   "name": "mpnats",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "nats client for baidu/weixin/alipay mini program",
   "keywords": [
     "nats",
@@ -12,17 +12,12 @@
     "alipay"
   ],
   "main": "index.js",
-  "directories": {
-    "test": "test"
-  },
   "scripts": {
-    "test": "ava",
-    "bundle": "rollup src/wx-nats.js -f umd -n nats -o dist/wx-nats.js",
-    "copy": "cp ./dist/wx-nats.js ./examples/mp-fragment/utils/wx-nats.js"
+    "test": "ava"
   },
   "repository": {
     "type": "git",
-    "url": "git@gitee.com:xharry/nats.git"
+    "url": "git+https://github.com/klouskingsley/mpnats.git"
   },
   "ava": {
 		"babel": {
@@ -32,8 +27,12 @@
 			}
 		}
 	},
-  "author": "",
+  "author": "klouskingsley",
   "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/klouskingsley/mpnats/issues"
+  },
+  "homepage": "https://github.com/klouskingsley/mpnats#readme",
   "devDependencies": {
     "@babel/core": "^7.2.0",
     "@babel/preset-env": "^7.2.0",
