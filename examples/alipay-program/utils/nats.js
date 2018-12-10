@@ -382,31 +382,35 @@
     return Websocket;
   }(E);
 
-  var SwanSocket =
+  var AlipaySocket =
   /*#__PURE__*/
   function (_Socket) {
-    _inherits(SwanSocket, _Socket);
+    _inherits(AlipaySocket, _Socket);
 
-    function SwanSocket(opt) {
+    function AlipaySocket(opt) {
       var _this;
 
-      _classCallCheck(this, SwanSocket);
+      _classCallCheck(this, AlipaySocket);
 
-      _this = _possibleConstructorReturn(this, _getPrototypeOf(SwanSocket).call(this, opt));
+      _this = _possibleConstructorReturn(this, _getPrototypeOf(AlipaySocket).call(this, opt));
       _this.socketTask = null;
       _this.isConnected = false;
       _this.isConnecting = false;
+      _this._onClose = _this._onClose.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+      _this._onOpen = _this._onOpen.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+      _this._onError = _this._onError.bind(_assertThisInitialized(_assertThisInitialized(_this)));
+      _this._onMessage = _this._onMessage.bind(_assertThisInitialized(_assertThisInitialized(_this)));
       return _this;
     }
 
-    _createClass(SwanSocket, [{
+    _createClass(AlipaySocket, [{
       key: "connect",
       value: function connect() {
         var _this2 = this;
 
         return new Promise(function (resolve, reject) {
           _this2.isConnecting = true;
-          _this2.socketTask = swan.connectSocket({
+          _this2.socketTask = my.connectSocket({
             url: _this2.url,
             success: function success() {
               _this2.isConnecting = false;
@@ -422,46 +426,44 @@
               reject(err);
             }
           });
-
-          _this2.socketTask.onOpen(_this2._onOpen.bind(_this2));
-
-          _this2.socketTask.onMessage(_this2._onMessage.bind(_this2));
-
-          _this2.socketTask.onClose(_this2._onClose.bind(_this2));
-
-          _this2.socketTask.onError(_this2._onError.bind(_this2));
+          my.onSocketError(_this2._onError);
+          my.onSocketClose(_this2._onClose);
+          my.onSocketOpen(_this2._onOpen);
+          my.onSocketMessage(_this2._onMessage);
         });
       }
     }, {
       key: "_onOpen",
       value: function _onOpen(header) {
+        // console.log('on open')
         this.emit('open', header);
         this.isConnected = true;
       }
     }, {
       key: "_onClose",
       value: function _onClose() {
+        // console.log('on close')
         this.emit('close');
         this.isConnected = false;
       }
     }, {
       key: "_onMessage",
       value: function _onMessage(res) {
+        // console.log('on message')
         var data = res.data;
         this.emit('message', data, res);
       }
     }, {
       key: "_onError",
       value: function _onError() {
+        // console.log('on error')
         this.emit('error');
       }
     }, {
       key: "send",
       value: function send(msg) {
-        var _this3 = this;
-
         return new Promise(function (resolve, reject) {
-          _this3.socketTask.send({
+          my.sendSocketMessage({
             data: msg,
             success: resolve,
             fail: reject
@@ -471,32 +473,48 @@
     }, {
       key: "close",
       value: function close() {
-        var _this4 = this;
+        var _this3 = this;
 
         if (this.isConnected) {
           return new Promise(function (resolve, reject) {
-            _this4.socketTask.close();
+            my.closeSocket();
 
-            _this4.once('close', resolve);
+            _this3.once('close', function () {
+              resolve();
+
+              this._removeMyListener();
+            });
           });
         }
 
         if (this.isConnecting) {
           return new Promise(function (resolve, reject) {
-            _this4.once('open', function () {
-              _this4.socketTask.close();
+            _this3.once('open', function () {
+              my.closeSocket();
             });
 
-            _this4.once('close', resolve);
+            _this3.once('close', function () {
+              resolve();
+
+              this._removeMyListener();
+            });
           });
         }
       }
+    }, {
+      key: "_removeMyListener",
+      value: function _removeMyListener() {
+        my.offSocketError(this._onError);
+        my.offSocketClose(this._onClose);
+        my.offSocketOpen(this._onOpen);
+        my.offSocketMessage(this._onMessage);
+      }
     }]);
 
-    return SwanSocket;
+    return AlipaySocket;
   }(Websocket);
 
-  Core.setSocket(SwanSocket);
+  Core.setSocket(AlipaySocket);
 
   return Core;
 

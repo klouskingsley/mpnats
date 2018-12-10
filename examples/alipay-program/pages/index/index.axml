@@ -1,7 +1,7 @@
 <view>
     hello pages/index
 
-    <button bindtap="sub">订阅</button>
-    <button bindtap="unsub">取消订阅</button>                                                                                                                                                                                                                      
-    <button bindtap="close">close</button>                                                                                                                                                                                                                      
+    <button onTap="sub">订阅</button>
+    <button onTap="unsub">取消订阅</button>                                                                                                                                                                                                                      
+    <button onTap="close">close</button>                                                                                                                                                                                                                      
 </view>

@@ -1,5 +1,5 @@
 const app = getApp()
-const Nats = require('../../utils/wx-nats')
+const Nats = require('../../utils/nats')
 
 Page({
 
@@ -8,25 +8,27 @@ Page({
     sid: ''
   },
 
-  async onLoad () {
+  onLoad () {
     const nats = new Nats()
-    await nats.connect({url: 'wss://msg-ws.myun.tv'})
+    nats.connect({url: 'wss://msg-ws.myun.tv'})
     this.nats = nats
     console.log('connect 成功')
     getApp().nats = nats
   },
 
-  async sub () {
-    this.sid = await this.nats.subscribe('stream-event', (data) =>  {
+  sub () {
+    this.nats.subscribe('stream-event', (data) =>  {
       console.log('stream-event', data)
+    }).then(sid => {
+      this.sid = sid
     })
   },
 
-  async unsub () {
-    await this.nats.unsubscribe(this.sid)
+  unsub () {
+    this.nats.unsubscribe(this.sid)
   },
 
-  async close () {
-    await this.nats.close()
+  close () {
+    this.nats.close()
   }
 })

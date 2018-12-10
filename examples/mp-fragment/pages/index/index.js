@@ -1,5 +1,5 @@
 const app = getApp()
-const Nats = require('../../utils/wx-nats')
+const Nats = require('../../utils/nats')
 
 Page({
 
