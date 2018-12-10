@@ -1,6 +1,6 @@
 import Socket from './base'
 
-class SwanSocket extends Socket {
+class AlipaySocket extends Socket {
     constructor (opt) {
         super(opt)
         this.socketTask = null
@@ -11,7 +11,7 @@ class SwanSocket extends Socket {
     connect () {
         return new Promise((resolve, reject) => {
             this.isConnecting = true
-            this.socketTask = swan.connectSocket({
+            this.socketTask = wx.connectSocket({
                 url: this.url,
                 success: () => {
                     this.isConnecting = false
@@ -32,7 +32,6 @@ class SwanSocket extends Socket {
     }
 
     _onOpen (header) {
-        console.log('socket open')
         this.emit('open', header)
         this.isConnected = true
     }
@@ -76,4 +75,4 @@ class SwanSocket extends Socket {
 
 }
 
-export default SwanSocket
+export default AlipaySocket

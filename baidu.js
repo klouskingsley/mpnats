@@ -435,6 +435,7 @@
     }, {
       key: "_onOpen",
       value: function _onOpen(header) {
+        console.log('socket open');
         this.emit('open', header);
         this.isConnected = true;
       }

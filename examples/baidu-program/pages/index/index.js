@@ -10,9 +10,11 @@ Page({
 
   onLoad () {
     const nats = new Nats()
-    nats.connect({url: 'wss://msg-ws.myun.tv'})
+    nats.connect({url: 'wss://msg-ws.myun.tv'}).then(() => {
+      console.log('connect 成功')
+    })
     this.nats = nats
-    console.log('connect 成功')
+    
     getApp().nats = nats
   },
 

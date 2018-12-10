@@ -29,4 +29,16 @@ gulp.task('rollup-baidu', function () {
         })
 })
 
-gulp.task('default', ['rollup-wx'])
+gulp.task('rollup-alipay', function () {
+    const inputConfig = rollupConfig.getInputConfig('alipay')
+    const outputCoinfig = rollupConfig.getOutputConfig('alipay')
+    return rollup.rollup(inputConfig)
+        .then(function (bundle) {
+            bundle.write(outputCoinfig)
+        })
+        .then(() => {
+            return cp(path.resolve(__dirname, './alipay.js'), path.resolve(__dirname, './examples/alipay-program/utils/', 'wx-nats.js'))
+        })
+})
+
+gulp.task('default', ['rollup-wx', 'rollup-baidu', 'rollup-alipay'])
