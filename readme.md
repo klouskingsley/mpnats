@@ -1,4 +1,4 @@
-# 微信/支付宝/百度的[nats](https://nats.io)客户端
+# 微信/支付宝/百度小程序的[nats](https://nats.io)客户端
 
 ## 安装
 

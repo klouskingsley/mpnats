@@ -1,7 +1,16 @@
 {
   "name": "mpnats",
   "version": "1.0.0",
-  "description": "",
+  "description": "nats client for baidu/weixin/alipay mini program",
+  "keywords": [
+    "nats",
+    "ws",
+    "websocket",
+    "mp",
+    "wechat",
+    "baidu",
+    "alipay"
+  ],
   "main": "index.js",
   "directories": {
     "test": "test"
